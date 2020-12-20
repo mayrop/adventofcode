@@ -1,8 +1,8 @@
 library(tidyverse)
 library(data.table)
 
-input.prod <- read_file("data/day01/prod.txt")
-input.test <- read_file("data/day01/dev.txt")
+input.prod <- read_file("../data/day01/prod.txt")
+input.test <- read_file("../data/day01/dev.txt")
 
 input <- input.test
 input <- input.prod
@@ -23,12 +23,12 @@ find_sum <- function(df, val) {
     )
 }
 
-df <- strsplit(input, "\n")[[1]] %>% 
-  as.numeric() %>% 
+df <- strsplit(input, "\n")[[1]] %>%
+  as.numeric() %>%
   as_tibble()
 
 find_sum(df, 2020)
-  
+
 ################################################
 
 # Part 2
@@ -47,3 +47,16 @@ for (i in 1:nrow(df2)) {
   }
 }
 
+################################################
+
+# Other solutions
+
+# From David Robinson: https://twitter.com/drob/status/1334108367665688579
+
+# Part 1
+intersect(df, 2020 - df)
+prod(intersect(df, 2020 - df))
+
+# Part 2
+intersect(df, 2020 - outer(df, df, "+"))
+prod(intersect(df, 2020 - outer(df, df, "+")))
