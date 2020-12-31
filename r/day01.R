@@ -1,5 +1,8 @@
 library(tidyverse)
-library(data.table)
+
+################################################################
+
+# Read Data
 
 input.prod <- read_file("../data/day01/prod.txt")
 input.test <- read_file("../data/day01/dev.txt")
@@ -7,56 +10,51 @@ input.test <- read_file("../data/day01/dev.txt")
 input <- input.test
 input <- input.prod
 
+input <- strsplit(input, "\n")[[1]] %>%
+  as.numeric()
+
+################################################################
+
 # Part 1
-find_sum <- function(df, val) {
-  df %>%
-    dplyr::mutate(y = val - value) %>%
-    dplyr::group_by(value) %>%
-    dplyr::mutate(min = min(value, y)) %>%
-    dplyr::ungroup() %>%
-    dplyr::add_count(min) %>%
-    dplyr::arrange(desc(n)) %>%
-    dplyr::filter(n == 2) %>%
-    dplyr::slice(1) %>%
-    dplyr::mutate(
-      ans = value * y
-    )
-}
+df <- as.vector(rbind(input, 2020 - input)) %>% 
+  table()
 
-df <- strsplit(input, "\n")[[1]] %>%
-  as.numeric() %>%
-  as_tibble()
+# Take the ones that repeat
+which(df == 2) %>% 
+  names() %>% 
+  as.numeric() %>% 
+  prod()
 
-find_sum(df, 2020)
-
-################################################
+################################################################
 
 # Part 2
-df2 <- df %>%
+tidyr::crossing(x = input, 
+                y = input,
+                z = input) %>%
   dplyr::mutate(
-    sum2 = 2020 - df$value
-  )
+    sum = x + y + z
+  ) %>%
+  dplyr::filter(
+    sum == 2020
+  ) %>%
+  head(1) %>%
+  select(x, y, z) %>%
+  prod()
 
-for (i in 1:nrow(df2)) {
-  vals = find_sum(df, df2[i, ]$sum2)
-  if (nrow(vals) == 1) {
-    print(vals)
-    print(df[i, ])
-    print(df[i, ] * vals$ans)
-    break;
-  }
-}
-
-################################################
+################################################################
 
 # Other solutions
 
 # From David Robinson: https://twitter.com/drob/status/1334108367665688579
 
 # Part 1
-intersect(df, 2020 - df)
-prod(intersect(df, 2020 - df))
+intersect(input, 2020 - input)
+prod(intersect(input, 2020 - input))
 
 # Part 2
-intersect(df, 2020 - outer(df, df, "+"))
-prod(intersect(df, 2020 - outer(df, df, "+")))
+intersect(input, 2020 - outer(input, input, "+"))
+prod(intersect(input, 2020 - outer(input, input, "+")))
+
+# https://github.com/riinuots/advent2020/blob/main/solutions/day01/report_repair.R
+
+################################################################
